@@ -1,0 +1,45 @@
+# Name of the workflow
+name: Cypress Tests
+
+# Trigger the workflow on push to the main branch or pull request
+on:
+  push:
+    branches:
+      - main
+  pull_request:
+    branches:
+      - main
+
+# Jobs to run
+jobs:
+  cypress-run:
+    # Run the job on the latest Ubuntu environment
+    runs-on: ubuntu-latest
+
+    # Steps to execute
+    steps:
+      # Step 1: Checkout the repository code
+      - name: Checkout code
+        uses: actions/checkout@v3
+
+      # Step 2: Set up Node.js (Cypress requires Node.js)
+      - name: Set up Node.js
+        uses: actions/setup-node@v3
+        with:
+          node-version: 20.17.0  # Specify the Node.js version
+
+      # Step 3: Install dependencies (npm install)
+      - name: Install dependencies
+        run: npm install
+
+      # Step 4: Run Cypress tests
+      - name: Run Cypress tests
+        run: npx cypress run --browser chrome
+
+      # Step 5: Upload test results as artifacts (optional)
+      - name: Upload test results
+        uses: actions/upload-artifact@v3
+        if: always() # Upload artifacts even if tests fail
+        with:
+          name: cypress-screenshots
+          path: cypress/screenshots
